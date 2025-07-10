@@ -34,6 +34,15 @@ export default function LineRiderGame({
   });
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawnLines, setDrawnLines] = useState<Matter.Body[]>([]);
+  const [currentPath, setCurrentPath] = useState<{ x: number; y: number }[]>(
+    []
+  );
+  const currentPathRef = useRef<{ x: number; y: number }[]>([]);
+
+  // Update ref whenever currentPath changes
+  useEffect(() => {
+    currentPathRef.current = currentPath;
+  }, [currentPath]);
   const aiIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const aiRef = useRef<LineRiderAI>(new LineRiderAI());
   const [aiStats, setAIStats] = useState({
@@ -46,6 +55,25 @@ export default function LineRiderGame({
   });
   const generationTimeRef = useRef<number>(0);
   const maxGenerationTime = 30000; // 30 seconds per generation
+
+  const riderImgRef = useRef<HTMLImageElement | null>(null);
+  const riderImgLoadedRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    const img = new window.Image();
+    img.src = "/rider.png";
+
+    img.onload = () => {
+      riderImgLoadedRef.current = true;
+    };
+
+    img.onerror = (error) => {
+      console.error("Failed to load rider image:", error);
+      riderImgLoadedRef.current = false;
+    };
+
+    riderImgRef.current = img;
+  }, []);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -60,7 +88,7 @@ export default function LineRiderGame({
 
     // Create Matter.js engine
     const engine = Matter.Engine.create();
-    engine.world.gravity.y = 0.8;
+    engine.gravity.y = 0.8;
     engineRef.current = engine;
 
     // Create runner
@@ -69,9 +97,10 @@ export default function LineRiderGame({
 
     // Create rider (circle)
     const rider = Matter.Bodies.circle(100, 100, 15, {
-      restitution: 0.8,
-      friction: 0.1,
-      render: { fillStyle: "#ff6b6b" },
+      restitution: 0.3,
+      friction: 0.8,
+      frictionAir: 0.01,
+      density: 0.001,
     });
     riderRef.current = rider;
 
@@ -92,13 +121,17 @@ export default function LineRiderGame({
         ctx.rotate(body.angle);
 
         if (body === rider) {
-          // Draw rider
-          ctx.fillStyle = "#ff6b6b";
-          ctx.beginPath();
-          ctx.arc(0, 0, 15, 0, Math.PI * 2);
-          ctx.fill();
+          const img = riderImgRef.current;
+
+          if (img && riderImgLoadedRef.current) {
+            ctx.drawImage(img, -30, -30, 60, 60);
+          } else {
+            ctx.fillStyle = "#ff6b6b";
+            ctx.beginPath();
+            ctx.arc(0, 0, 30, 0, Math.PI * 2); // 2x radius
+            ctx.fill();
+          }
         } else {
-          // Draw lines/ground
           ctx.fillStyle = "#333";
           const vertices = body.vertices;
           ctx.beginPath();
@@ -160,6 +193,22 @@ export default function LineRiderGame({
         }
       }
 
+      // Draw current path being drawn (preview)
+      if (currentPathRef.current.length > 1) {
+        ctx.strokeStyle = "#4ecdc4";
+        ctx.lineWidth = 5;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        ctx.moveTo(currentPathRef.current[0].x, currentPathRef.current[0].y);
+
+        for (let i = 1; i < currentPathRef.current.length; i++) {
+          ctx.lineTo(currentPathRef.current[i].x, currentPathRef.current[i].y);
+        }
+
+        ctx.stroke();
+      }
+
       requestAnimationFrame(render);
     };
 
@@ -176,32 +225,35 @@ export default function LineRiderGame({
 
     // Remove all drawn lines
     drawnLines.forEach((line) => {
-        if (engineRef.current) {
+      if (engineRef.current) {
         Matter.World.remove(engineRef.current.world, line);
-        }
+      }
     });
     setDrawnLines([]);
 
+    setCurrentPath([]);
+    setIsDrawing(false);
+
     // Reset rider position
     if (riderRef.current) {
-        Matter.Body.setPosition(riderRef.current, { x: 100, y: 100 });
-        Matter.Body.setVelocity(riderRef.current, { x: 0, y: 0 });
-        Matter.Body.setAngularVelocity(riderRef.current, 0);
+      Matter.Body.setPosition(riderRef.current, { x: 100, y: 100 });
+      Matter.Body.setVelocity(riderRef.current, { x: 0, y: 0 });
+      Matter.Body.setAngularVelocity(riderRef.current, 0);
     }
 
     // Reset state
     setRiderState({
-        score: 0,
-        flips: 0,
-        airTime: 0,
-        isGrounded: true,
-        velocity: 0,
+      score: 0,
+      flips: 0,
+      airTime: 0,
+      isGrounded: true,
+      velocity: 0,
     });
 
     // Reset AI if needed
     if (isAIActive) {
-        aiRef.current.reset();
-        setAIStats(aiRef.current.getAIStats());
+      aiRef.current.reset();
+      setAIStats(aiRef.current.getAIStats());
     }
   }, [drawnLines, isAIActive]);
 
@@ -271,12 +323,41 @@ export default function LineRiderGame({
     };
   }, [isAIActive, riderState, resetGame]);
 
-  // Handle manual drawing
-  const handleMouseDown = () => {
-    if (isAIActive) return;
-    setIsDrawing(true);
+  // Helper function to create a continuous line from points
+  const createContinuousLine = (points: { x: number; y: number }[]) => {
+    if (points.length < 2) return null;
+
+    const bodies: Matter.Body[] = [];
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const start = points[i];
+      const end = points[i + 1];
+
+      const centerX = (start.x + end.x) / 2;
+      const centerY = (start.y + end.y) / 2;
+      const length = Math.sqrt(
+        Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
+      );
+      const angle = Math.atan2(end.y - start.y, end.x - start.x);
+
+      if (length > 2) {
+        // Only create segments that are meaningful
+        const segment = Matter.Bodies.rectangle(centerX, centerY, length, 8, {
+          isStatic: true,
+          angle: angle,
+          render: { fillStyle: "#4ecdc4" },
+          friction: 0.8,
+          frictionStatic: 0.9,
+          restitution: 0.1,
+        });
+        bodies.push(segment);
+      }
+    }
+
+    return bodies;
   };
 
+  // Handle manual drawing
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDrawing || isAIActive || !canvasRef.current || !engineRef.current)
       return;
@@ -285,20 +366,115 @@ export default function LineRiderGame({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    // Create line segment
-    const line = Matter.Bodies.rectangle(x, y, 20, 5, {
-      isStatic: true,
-      render: { fillStyle: "#4ecdc4" },
-    });
+    // Add point to current path
+    setCurrentPath((prev) => {
+      const newPath = [...prev, { x, y }];
 
-    if (engineRef.current) {
-      Matter.World.add(engineRef.current.world, line);
-      setDrawnLines((prev) => [...prev, line]);
-    }
+      // Only add segments when we have at least 2 points and meaningful distance
+      if (newPath.length >= 2) {
+        const lastPoint = newPath[newPath.length - 2];
+        const distance = Math.sqrt(
+          Math.pow(x - lastPoint.x, 2) + Math.pow(y - lastPoint.y, 2)
+        );
+
+        if (distance >= 8) {
+          // Minimum distance between points for smooth drawing
+          return newPath;
+        } else {
+          // Replace the last point instead of adding a new one if too close
+          return [...prev.slice(0, -1), { x, y }];
+        }
+      }
+
+      return newPath;
+    });
   };
 
   const handleMouseUp = () => {
+    if (isDrawing && currentPath.length >= 2 && engineRef.current) {
+      // Create the continuous line from the current path
+      const lineSegments = createContinuousLine(currentPath);
+      if (lineSegments && lineSegments.length > 0) {
+        // Add all segments to the physics world
+        Matter.World.add(engineRef.current.world, lineSegments);
+        setDrawnLines((prev) => [...prev, ...lineSegments]);
+      }
+    }
+
     setIsDrawing(false);
+    setCurrentPath([]);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (isAIActive) return;
+    setIsDrawing(true);
+
+    const rect = canvasRef.current!.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    setCurrentPath([{ x, y }]); // Start a new path
+  };
+
+  // Add touch event handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isAIActive) return;
+    setIsDrawing(true);
+
+    const rect = canvasRef.current!.getBoundingClientRect();
+    const touch = e.touches[0];
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+
+    setCurrentPath([{ x, y }]); // Start a new path
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDrawing || isAIActive || !canvasRef.current || !engineRef.current)
+      return;
+
+    const rect = canvasRef.current.getBoundingClientRect();
+    const touch = e.touches[0]; // Get the first touch point
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+
+    // Add point to current path
+    setCurrentPath((prev) => {
+      const newPath = [...prev, { x, y }];
+
+      // Only add segments when we have at least 2 points and meaningful distance
+      if (newPath.length >= 2) {
+        const lastPoint = newPath[newPath.length - 2];
+        const distance = Math.sqrt(
+          Math.pow(x - lastPoint.x, 2) + Math.pow(y - lastPoint.y, 2)
+        );
+
+        if (distance >= 8) {
+          // Minimum distance between points for smooth drawing
+          return newPath;
+        } else {
+          // Replace the last point instead of adding a new one if too close
+          return [...prev.slice(0, -1), { x, y }];
+        }
+      }
+
+      return newPath;
+    });
+  };
+
+  const handleTouchEnd = () => {
+    if (isDrawing && currentPath.length >= 2 && engineRef.current) {
+      // Create the continuous line from the current path
+      const lineSegments = createContinuousLine(currentPath);
+      if (lineSegments && lineSegments.length > 0) {
+        // Add all segments to the physics world
+        Matter.World.add(engineRef.current.world, lineSegments);
+        setDrawnLines((prev) => [...prev, ...lineSegments]);
+      }
+    }
+
+    setIsDrawing(false);
+    setCurrentPath([]);
   };
 
   return (
@@ -314,6 +490,9 @@ export default function LineRiderGame({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       />
 
       {/* Game UI */}

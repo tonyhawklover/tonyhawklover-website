@@ -23,7 +23,7 @@ export default function Footer() {
               GitHub
             </a>
             <a
-              href="https://linkedin.com/in/blakeabel"
+              href="https://linkedin.com/in/Blake-Abel-"
               className="hover:text-blue-500 transition-colors"
             >
               LinkedIn
