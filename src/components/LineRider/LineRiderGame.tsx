@@ -75,13 +75,7 @@ export default function LineRiderGame({
     });
     riderRef.current = rider;
 
-    // Add initial ground
-    const ground = Matter.Bodies.rectangle(200, canvas.height - 50, 400, 20, {
-      isStatic: true,
-      render: { fillStyle: "#333" },
-    });
-
-    Matter.World.add(engine.world, [rider, ground]);
+    Matter.World.add(engine.world, [rider]);
 
     // Start runner
     Matter.Runner.run(runner, engine);
