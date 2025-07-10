@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import Matter from "matter-js";
 import { LineRiderAI } from "./LineRiderAI";
 
@@ -171,39 +171,39 @@ export default function LineRiderGame({
     };
   }, []);
 
-  const resetGame = () => {
+  const resetGame = useCallback(() => {
     if (!engineRef.current || !canvasRef.current) return;
 
     // Remove all drawn lines
     drawnLines.forEach((line) => {
-      if (engineRef.current) {
+        if (engineRef.current) {
         Matter.World.remove(engineRef.current.world, line);
-      }
+        }
     });
     setDrawnLines([]);
 
     // Reset rider position
     if (riderRef.current) {
-      Matter.Body.setPosition(riderRef.current, { x: 100, y: 100 });
-      Matter.Body.setVelocity(riderRef.current, { x: 0, y: 0 });
-      Matter.Body.setAngularVelocity(riderRef.current, 0);
+        Matter.Body.setPosition(riderRef.current, { x: 100, y: 100 });
+        Matter.Body.setVelocity(riderRef.current, { x: 0, y: 0 });
+        Matter.Body.setAngularVelocity(riderRef.current, 0);
     }
 
     // Reset state
     setRiderState({
-      score: 0,
-      flips: 0,
-      airTime: 0,
-      isGrounded: true,
-      velocity: 0,
+        score: 0,
+        flips: 0,
+        airTime: 0,
+        isGrounded: true,
+        velocity: 0,
     });
 
     // Reset AI if needed
     if (isAIActive) {
-      aiRef.current.reset();
-      setAIStats(aiRef.current.getAIStats());
+        aiRef.current.reset();
+        setAIStats(aiRef.current.getAIStats());
     }
-  };
+  }, [drawnLines, isAIActive]);
 
   // AI Logic
   useEffect(() => {
@@ -272,7 +272,7 @@ export default function LineRiderGame({
   }, [isAIActive, riderState, resetGame]);
 
   // Handle manual drawing
-  const handleMouseDown = (_e: React.MouseEvent) => {
+  const handleMouseDown = () => {
     if (isAIActive) return;
     setIsDrawing(true);
   };
