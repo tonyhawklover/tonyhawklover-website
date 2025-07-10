@@ -1,44 +1,106 @@
-# Next.js Framework Starter
+# Abel Blanco - Interactive Resume with AI Line Rider
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/next-starter-template)
+A unique and creative resume website that combines professional information with an interactive AI-powered Line Rider game overlay. Watch as an AI learns to play Line Rider in real-time while you browse through my professional experience and projects.
 
-<!-- dash-content-start -->
+## 🎮 Features
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). It's deployed on Cloudflare Workers as a [static website](https://developers.cloudflare.com/workers/static-assets/).
+### Interactive Resume
 
-This template uses [OpenNext](https://opennext.js.org/) via the [OpenNext Cloudflare adapter](https://opennext.js.org/cloudflare), which works by taking the Next.js build output and transforming it, so that it can run in Cloudflare Workers.
+- **Modern Design**: Clean, responsive design with smooth animations
+- **Multiple Sections**: About, Experience, Education, Skills, and Projects
+- **Dark Mode Support**: Automatic dark/light mode based on system preference
+- **Smooth Navigation**: Tabbed interface with smooth transitions
 
-<!-- dash-content-end -->
+### AI-Powered Line Rider Game
 
-Outside of this repo, you can start a new project with this template using [C3](https://developers.cloudflare.com/pages/get-started/c3/) (the `create-cloudflare` CLI):
+- **Real-time AI Learning**: AI that evolves and improves its Line Rider gameplay over time
+- **Genetic Algorithm**: Uses evolutionary algorithms to optimize line placement and rider control
+- **Visual Learning Progress**: See the AI's generation, best score, and learning metrics
+- **User Control**: Take control at any time to draw your own lines
+- **Physics Simulation**: Realistic physics using Matter.js
+
+### Technical Highlights
+
+- **Next.js 15**: Latest React framework with App Router
+- **TypeScript**: Full type safety throughout the application
+- **Tailwind CSS**: Modern utility-first CSS framework
+- **Matter.js**: Physics engine for realistic Line Rider simulation
+- **Framer Motion**: Smooth animations and transitions
+- **Genetic Algorithm**: Custom AI implementation that learns and evolves
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
 
 ```bash
-npm create cloudflare@latest -- --template=cloudflare/templates/next-starter-template
+git clone https://github.com/abelblanco/tonyhawklover-website.git
+cd tonyhawklover-website
 ```
 
-A live public deployment of this template is available at [https://next-starter-template.templates.workers.dev](https://next-starter-template.templates.workers.dev)
-
-## Getting Started
-
-First, run:
+2. Install dependencies:
 
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
 ```
 
-Then run the development server (using the package manager of your choice):
+3. Run the development server:
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3001](http://localhost:3001) in your browser
+
+## 🎯 How the AI Works
+
+The AI uses a genetic algorithm to learn optimal Line Rider strategies:
+
+1. **Population**: Maintains multiple strategies (individuals) in each generation
+2. **Evaluation**: Each strategy is scored based on:
+   - Distance traveled
+   - Tricks performed (flips, air time)
+   - Overall performance
+3. **Selection**: Best-performing strategies survive to the next generation
+4. **Crossover**: Combines successful strategies to create new ones
+5. **Mutation**: Introduces random variations to explore new possibilities
+6. **Evolution**: Each generation typically lasts 30 seconds before evolving
+
+### AI Controls
+
+- **AI Control**: Watch the AI learn and evolve its strategies
+- **Take Control**: Switch to manual mode to draw your own lines
+- **Reset**: Start the AI learning process from scratch
+
+## 🛠️ Technical Architecture
+
+### Frontend
+
+- **React 19**: Latest React with modern hooks and concurrent features
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first styling
+- **Framer Motion**: Animation library
+
+### Game Engine
+
+- **Matter.js**: 2D physics engine
+- **Canvas API**: Custom rendering for optimal performance
+- **Genetic Algorithm**: Custom AI implementation
+
+### Deployment
+
+- **Vercel**: Optimized for Next.js deployment
+- **Cloudflare**: CDN and edge computing support
+
+---
+
+_Built with ❤️ by Abel Blanco_
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
