@@ -26,8 +26,7 @@ export default function Home() {
             Welcome to My Interactive Resume!
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-300">
-            Watch the AI learn to play Line Rider while you browse my resume.
-            Click "Take Control" to draw your own lines!
+            Watch the AI learn to play Line Rider while you browse my resume
           </p>
         </div>
       </div>

@@ -75,13 +75,7 @@ export default function LineRiderGame({
     });
     riderRef.current = rider;
 
-    // Add initial ground
-    const ground = Matter.Bodies.rectangle(200, canvas.height - 50, 400, 20, {
-      isStatic: true,
-      render: { fillStyle: "#333" },
-    });
-
-    Matter.World.add(engine.world, [rider, ground]);
+    Matter.World.add(engine.world, [rider]);
 
     // Start runner
     Matter.Runner.run(runner, engine);
@@ -177,6 +171,40 @@ export default function LineRiderGame({
     };
   }, []);
 
+  const resetGame = () => {
+    if (!engineRef.current || !canvasRef.current) return;
+
+    // Remove all drawn lines
+    drawnLines.forEach((line) => {
+      if (engineRef.current) {
+        Matter.World.remove(engineRef.current.world, line);
+      }
+    });
+    setDrawnLines([]);
+
+    // Reset rider position
+    if (riderRef.current) {
+      Matter.Body.setPosition(riderRef.current, { x: 100, y: 100 });
+      Matter.Body.setVelocity(riderRef.current, { x: 0, y: 0 });
+      Matter.Body.setAngularVelocity(riderRef.current, 0);
+    }
+
+    // Reset state
+    setRiderState({
+      score: 0,
+      flips: 0,
+      airTime: 0,
+      isGrounded: true,
+      velocity: 0,
+    });
+
+    // Reset AI if needed
+    if (isAIActive) {
+      aiRef.current.reset();
+      setAIStats(aiRef.current.getAIStats());
+    }
+  };
+
   // AI Logic
   useEffect(() => {
     if (!isAIActive || !canvasRef.current || !engineRef.current) return;
@@ -213,7 +241,6 @@ export default function LineRiderGame({
       }
 
       // Update AI with current performance
-      const velocity = Math.sqrt(riderVelocity.x ** 2 + riderVelocity.y ** 2);
       const isInAir = Math.abs(riderVelocity.y) > 0.1;
 
       aiRef.current.updateScore(
@@ -242,10 +269,10 @@ export default function LineRiderGame({
         clearInterval(aiIntervalRef.current);
       }
     };
-  }, [isAIActive, riderState]);
+  }, [isAIActive, riderState, resetGame]);
 
   // Handle manual drawing
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = (_e: React.MouseEvent) => {
     if (isAIActive) return;
     setIsDrawing(true);
   };
@@ -272,40 +299,6 @@ export default function LineRiderGame({
 
   const handleMouseUp = () => {
     setIsDrawing(false);
-  };
-
-  const resetGame = () => {
-    if (!engineRef.current || !canvasRef.current) return;
-
-    // Remove all drawn lines
-    drawnLines.forEach((line) => {
-      if (engineRef.current) {
-        Matter.World.remove(engineRef.current.world, line);
-      }
-    });
-    setDrawnLines([]);
-
-    // Reset rider position
-    if (riderRef.current) {
-      Matter.Body.setPosition(riderRef.current, { x: 100, y: 100 });
-      Matter.Body.setVelocity(riderRef.current, { x: 0, y: 0 });
-      Matter.Body.setAngularVelocity(riderRef.current, 0);
-    }
-
-    // Reset state
-    setRiderState({
-      score: 0,
-      flips: 0,
-      airTime: 0,
-      isGrounded: true,
-      velocity: 0,
-    });
-
-    // Reset AI if needed
-    if (isAIActive) {
-      aiRef.current.reset();
-      setAIStats(aiRef.current.getAIStats());
-    }
   };
 
   return (

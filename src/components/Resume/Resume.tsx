@@ -41,7 +41,7 @@ interface ResumeData {
 }
 
 const resumeData: ResumeData = {
-  name: "Abel Blanco",
+  name: "Blake Abel",
   title: "Full Stack Developer & Creative Technologist",
   contact: {
     email: "blake@tonyhawklover.com",
