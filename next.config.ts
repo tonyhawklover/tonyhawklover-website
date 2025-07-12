@@ -7,5 +7,9 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 
 // added by create cloudflare to enable calling `getCloudflareContext()` in `next dev`
-import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
-initOpenNextCloudflareForDev();
+// Only enable on non-NixOS systems or when explicitly requested
+if (process.env.ENABLE_CLOUDFLARE_DEV === "true" || (process.platform !== "linux" || !process.env.NIX_PATH)) {
+  import("@opennextjs/cloudflare").then(({ initOpenNextCloudflareForDev }) => {
+    initOpenNextCloudflareForDev();
+  });
+}
