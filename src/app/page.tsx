@@ -18,18 +18,6 @@ export default function Home() {
 
       {/* Line Rider Game Overlay */}
       <LineRiderGame isAIActive={isAIActive} onToggleAI={toggleAI} />
-
-      {/* Welcome Message */}
-      <div className="fixed top-4 right-4 max-w-sm pointer-events-none z-20">
-        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-lg p-4 shadow-lg">
-          <h3 className="font-bold text-gray-800 dark:text-white mb-2">
-            Welcome to My Interactive Resume!
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            Watch the AI learn to play Line Rider while you browse my resume
-          </p>
-        </div>
-      </div>
     </div>
   );
 }

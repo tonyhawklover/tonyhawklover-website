@@ -2,14 +2,12 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import Footer from "../Footer/Footer";
 
 interface ResumeData {
   name: string;
   title: string;
   contact: {
     email: string;
-    phone: string;
     location: string;
     linkedin: string;
     github: string;
@@ -32,31 +30,29 @@ interface ResumeData {
     languages: string[];
     tools: string[];
   };
-  projects: Array<{
+  hobbies: Array<{
     name: string;
     description: string;
-    technologies: string[];
     link?: string;
   }>;
 }
 
 const resumeData: ResumeData = {
   name: "Blake Abel",
-  title: "Full Stack Developer & Creative Technologist",
+  title: "Full Stack Software Engineer",
   contact: {
-    email: "blake@tonyhawklover.com",
-    phone: "N/A",
-    location: "Anywhere, USA",
-    linkedin: "linkedin.com/in/blakeabel",
+    email: "resume@tonyhawklover.com",
+    location: "Anywhere You Need Me, USA",
+    linkedin: "linkedin.com/in/Blake-Abel-",
     github: "github.com/tonyhawklover",
   },
   summary:
     "Passionate full-stack developer with a love for creative coding and interactive experiences. Skilled in building modern web applications with a focus on user experience and innovative solutions. Currently exploring AI and machine learning applications in web development.",
   experience: [
     {
-      company: "Tech Innovators Inc.",
-      position: "Senior Frontend Developer",
-      duration: "2022 - Present",
+      company: "Brady Corporation",
+      position: "Full Stack Software Engineer",
+      duration: "2023 - Present",
       description: [
         "Led development of interactive web applications using React and Next.js",
         "Implemented AI-powered features that increased user engagement by 40%",
@@ -65,9 +61,9 @@ const resumeData: ResumeData = {
       ],
     },
     {
-      company: "Creative Digital Agency",
-      position: "Full Stack Developer",
-      duration: "2020 - 2022",
+      company: "iFIT",
+      position: "Test Engineer",
+      duration: "2021 - 2022",
       description: [
         "Built responsive web applications for diverse clients",
         "Developed custom CMS solutions using Node.js and MongoDB",
@@ -76,8 +72,8 @@ const resumeData: ResumeData = {
       ],
     },
     {
-      company: "Startup Labs",
-      position: "Junior Developer",
+      company: "AT&T",
+      position: "Technical Account Manager",
       duration: "2019 - 2020",
       description: [
         "Contributed to early-stage product development",
@@ -89,55 +85,43 @@ const resumeData: ResumeData = {
   ],
   education: [
     {
-      institution: "University of Technology",
-      degree: "Bachelor of Science in Computer Science",
-      duration: "2015 - 2019",
-      details: "Focus on Software Engineering and Human-Computer Interaction",
+      institution: "Western Governors University",
+      degree: "Computer Science",
+      duration: "2019 - 2021",
+      details: "Focus on Software Engineering and Automation",
     },
   ],
   skills: {
     technical: [
       "JavaScript/TypeScript",
+      "C#/.NET",
+      "Clojure",
       "React/Next.js",
-      "Node.js",
-      "Python",
-      "SQL/NoSQL",
+      "Linux/Windows/MacOS",
+      "SQL",
       "GraphQL",
       "HTML/CSS",
       "Git/GitHub",
     ],
-    languages: ["English (Native)", "Spanish (Fluent)", "French (Basic)"],
     tools: [
       "VS Code",
+      "Visual Studio",
+      "Atlassian",
+      "CircleCi",
       "Figma",
+      "Adobe Creative Suite",
       "Docker",
+      "Cloudflare",
       "AWS",
-      "Vercel",
-      "MongoDB",
-      "PostgreSQL",
     ],
+    languages: ["English (Native)", "Mandarin Chinese (Basic)"],
   },
-  projects: [
+  hobbies: [
     {
-      name: "AI-Powered Resume with Line Rider",
+      name: "Chess",
       description:
-        "Interactive resume website featuring an AI that learns to play Line Rider in real-time",
-      technologies: ["Next.js", "TypeScript", "Matter.js", "Machine Learning"],
-      link: "https://github.com/tonyhawklover/line-rider-resume",
-    },
-    {
-      name: "Creative Portfolio Platform",
-      description:
-        "Full-stack platform for artists to showcase their work with interactive galleries",
-      technologies: ["React", "Node.js", "MongoDB", "WebGL"],
-      link: "https://github.com/tonyhawklover/creative-portfolio",
-    },
-    {
-      name: "Real-time Collaboration Tool",
-      description:
-        "Web application for real-time collaborative editing and project management",
-      technologies: ["React", "Socket.io", "Express", "PostgreSQL"],
-      link: "https://github.com/tonyhawklover/collab-tool",
+        "chefs",
+      link: "https://www.chess.com/member/tonyhawklover/stats/rapid?days=0",
     },
   ],
 };
@@ -150,7 +134,7 @@ export default function Resume() {
     { id: "experience", label: "Experience" },
     { id: "education", label: "Education" },
     { id: "skills", label: "Skills" },
-    { id: "projects", label: "Projects" },
+    { id: "hobbies", label: "Hobbies" },
   ];
 
   const sectionVariants = {
@@ -176,8 +160,6 @@ export default function Resume() {
           </p>
           <div className="flex justify-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
             <span>{resumeData.contact.email}</span>
-            <span>•</span>
-            <span>{resumeData.contact.phone}</span>
             <span>•</span>
             <span>{resumeData.contact.location}</span>
           </div>
@@ -350,24 +332,6 @@ export default function Resume() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
-                    Languages
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {resumeData.skills.languages.map((lang, index) => (
-                      <motion.span
-                        key={index}
-                        className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-sm"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3, delay: index * 0.05 }}
-                      >
-                        {lang}
-                      </motion.span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
                     Tools & Platforms
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -384,12 +348,30 @@ export default function Resume() {
                     ))}
                   </div>
                 </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
+                    Languages
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {resumeData.skills.languages.map((lang, index) => (
+                      <motion.span
+                        key={index}
+                        className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-sm"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                      >
+                        {lang}
+                      </motion.span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </motion.section>
           )}
 
-          {/* Projects Section */}
-          {activeSection === "projects" && (
+          {/* Hobbies Section */}
+          {activeSection === "hobbies" && (
             <motion.section
               className="bg-white dark:bg-gray-800 rounded-lg p-8 shadow-lg"
               variants={sectionVariants}
@@ -397,10 +379,10 @@ export default function Resume() {
               animate="visible"
             >
               <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">
-                Projects
+                Hobbies
               </h2>
               <div className="grid md:grid-cols-2 gap-6">
-                {resumeData.projects.map((project, index) => (
+                {resumeData.hobbies.map((hobby, index) => (
                   <motion.div
                     key={index}
                     className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow"
@@ -409,27 +391,17 @@ export default function Resume() {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
                     <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">
-                      {project.name}
+                      {hobby.name}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300 mb-4">
-                      {project.description}
+                      {hobby.description}
                     </p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.technologies.map((tech, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-sm"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                    {project.link && (
+                    {hobby.link && (
                       <a
-                        href={project.link}
+                        href={hobby.link}
                         className="text-blue-500 hover:text-blue-600 transition-colors text-sm"
                       >
-                        View Project →
+                        View Hobby →
                       </a>
                     )}
                   </motion.div>
@@ -439,8 +411,6 @@ export default function Resume() {
           )}
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

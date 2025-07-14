@@ -456,7 +456,7 @@ export default function LineRiderGame({
       />
 
       {/* Game UI */}
-      <div className="absolute top-4 left-4 pointer-events-auto">
+      <div className="absolute top-4 right-4 pointer-events-auto">
         <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 text-white text-sm space-y-2">
           <div>Score: {riderState.score}</div>
           <div>Velocity: {riderState.velocity.toFixed(1)}</div>
