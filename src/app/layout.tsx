@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Blake Abel | Resume & Portfolio",
-  description: "Interactive resume with AI-powered Line Rider game overlay",
+  title: "Genesee Lives here",
+  description: "Home of Rorys mom",
 };
 
 export default function RootLayout({
